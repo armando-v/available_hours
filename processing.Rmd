@@ -1,0 +1,26 @@
+---
+title: "Untitled"
+output: html_document
+date: "2023-11-16"
+---
+
+```{r cars}
+library(odbc)
+library(DBI)
+library(glue)
+
+
+
+query <- glue("CREATE TABLE V_AVAILABILITY_2023 AS
+SELECT a.*, TO_CHAR(a.SLOT_DATE, 'yyyy-mm') AS SLOT_MONTH_YEAR, --Create column to group by month
+a.SLOT_LENGTH/60 AS SLOT_LENGTH_HOUR FROM V_AVAILABILITY a WHERE
+TO_CHAR(a.SLOT_DATE, 'yyyy') = '2023' AND UNAVAILABLE_RSN_C IS NULL AND
+rowid not in
+(SELECT MIN(rowid)
+FROM V_AVAILABILITY
+WHERE TO_CHAR(a.SLOT_DATE, 'yyyy') = '2023'
+GROUP BY DEPARTMENT_NAME,DEPARTMENT_ID, PROV_NM_WID, PROV_ID,SLOT_BEGIN_TIME, SLOT_DATE, SLOT_LENGTH);")
+
+
+```
+
